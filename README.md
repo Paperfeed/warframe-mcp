@@ -17,16 +17,25 @@ A Model Context Protocol (MCP) server for Warframe that provides intelligent rec
 
 ## Available Tools
 
-The MCP server provides 8 powerful tools:
+The MCP server provides 10 powerful tools:
 
+### Recommendations
 1. **recommend_prime_farming** - Get personalized prime part farming recommendations
 2. **recommend_standing_farming** - Find the best syndicate standing opportunities
 3. **recommend_credit_farming** - Optimize your credit farming strategy
+
+### World State & Events
 4. **get_world_state** - View current game state, events, and cycles
 5. **get_baro_status** - Check Baro Ki'Teer's location and inventory
 6. **get_varzia_status** - View Prime Resurgence rotation and schedule
+
+### Market Data
 7. **get_market_price** - Look up item prices on warframe.market
 8. **search_market_items** - Search for tradeable items
+
+### Your Account (Requires Alecaframe)
+9. **get_my_relics** - View your personal relic inventory with counts and refinement levels
+10. **get_my_stats** - View your trading statistics and account metrics
 
 See [USAGE.md](USAGE.md) for detailed documentation and examples.
 

@@ -49,7 +49,7 @@ func run() error {
 	s := server.NewMCPServer(serverName, serverVersion)
 
 	// Register tools
-	registerTools(s, rec, worldStateClient, marketClient)
+	registerTools(s, rec, alecaframeClient, worldStateClient, marketClient)
 
 	// Start server with stdio transport
 	if err := server.ServeStdio(s); err != nil {
@@ -102,7 +102,7 @@ func loadConfig() (*config.Config, error) {
 	return cfg, nil
 }
 
-func registerTools(s *server.MCPServer, rec *recommender.Recommender, wsClient *worldstate.Client, mClient *market.Client) {
+func registerTools(s *server.MCPServer, rec *recommender.Recommender, aClient *alecaframe.Client, wsClient *worldstate.Client, mClient *market.Client) {
 	// Tool: Get prime farming recommendations
 	s.AddTool(mcp.Tool{
 		Name:        "recommend_prime_farming",
@@ -306,6 +306,100 @@ Recommendation: %s`,
 		for i, item := range items {
 			result += fmt.Sprintf("%d. %s\n", i+1, item.ItemName)
 		}
+
+		return mcp.NewToolResultText(result), nil
+	})
+
+	// Tool: Get user's relic inventory (Alecaframe)
+	s.AddTool(mcp.Tool{
+		Name:        "get_my_relics",
+		Description: "Get your personal relic inventory from Alecaframe. Requires Alecaframe credentials to be configured. Shows all relics you own with counts and refinement levels.",
+		InputSchema: mcp.ToolInputSchema{
+			Type:       "object",
+			Properties: map[string]interface{}{},
+		},
+	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
+		if aClient == nil {
+			return mcp.NewToolResultError("Alecaframe is not configured. Please set WARFRAME_USER_HASH and WARFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
+		}
+
+		inventory, err := aClient.GetRelicInventory()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Error fetching relic inventory: %v", err)), nil
+		}
+
+		if len(inventory.Relics) == 0 {
+			return mcp.NewToolResultText("No relics found in your inventory."), nil
+		}
+
+		// Build a nice summary
+		result := fmt.Sprintf("=== Your Relic Inventory ===\n\nTotal unique relics: %d\n\n", len(inventory.Relics))
+
+		// Group by era
+		byEra := make(map[string][]alecaframe.Relic)
+		for _, relic := range inventory.Relics {
+			byEra[relic.Era] = append(byEra[relic.Era], relic)
+		}
+
+		// Display in order: Requiem, Axi, Neo, Meso, Lith
+		eras := []string{"Requiem", "Axi", "Neo", "Meso", "Lith"}
+		for _, era := range eras {
+			relics, ok := byEra[era]
+			if !ok || len(relics) == 0 {
+				continue
+			}
+
+			result += fmt.Sprintf("## %s Relics (%d)\n", era, len(relics))
+			for _, relic := range relics {
+				vaulted := ""
+				if relic.IsVaulted {
+					vaulted = " [VAULTED]"
+				}
+				result += fmt.Sprintf("  %s %s: %d total%s\n", relic.Era, relic.Name, relic.Count, vaulted)
+
+				// Show refinement breakdown if available
+				if relic.Intact > 0 || relic.Exceptional > 0 || relic.Flawless > 0 || relic.Radiant > 0 {
+					result += fmt.Sprintf("    Intact: %d, Exceptional: %d, Flawless: %d, Radiant: %d\n",
+						relic.Intact, relic.Exceptional, relic.Flawless, relic.Radiant)
+				}
+			}
+			result += "\n"
+		}
+
+		return mcp.NewToolResultText(result), nil
+	})
+
+	// Tool: Get user's trading statistics (Alecaframe)
+	s.AddTool(mcp.Tool{
+		Name:        "get_my_stats",
+		Description: "Get your personal trading and account statistics from Alecaframe. Requires Alecaframe credentials to be configured. Shows total trades, platinum earned/spent, and other account metrics.",
+		InputSchema: mcp.ToolInputSchema{
+			Type:       "object",
+			Properties: map[string]interface{}{},
+		},
+	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
+		if aClient == nil {
+			return mcp.NewToolResultError("Alecaframe is not configured. Please set WARFRAME_USER_HASH and WARFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
+		}
+
+		stats, err := aClient.GetUserStats()
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("Error fetching user stats: %v", err)), nil
+		}
+
+		result := fmt.Sprintf(`=== Your Warframe Statistics ===
+
+Trading:
+  Total Trades: %d
+  Platinum Earned: %d
+  Platinum Spent: %d
+  Net Platinum: %d
+`,
+			stats.TotalTrades,
+			stats.PlatinumEarned,
+			stats.PlatinumSpent,
+			stats.PlatinumEarned-stats.PlatinumSpent,
+		)
 
 		return mcp.NewToolResultText(result), nil
 	})

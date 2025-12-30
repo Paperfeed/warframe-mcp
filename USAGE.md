@@ -147,6 +147,47 @@ Search for tradeable items on warframe.market by name.
 
 ---
 
+### 9. `get_my_relics`
+
+Get your personal relic inventory from Alecaframe.
+
+**Requirements:**
+- Alecaframe credentials must be configured (`WARFRAME_USER_HASH` and `WARFRAME_PUBLIC_TOKEN`)
+
+**Example queries:**
+- "Show me my relic inventory"
+- "What relics do I have?"
+- "Do I have any vaulted relics?"
+
+**Returns:**
+- Complete list of your relics organized by era (Requiem, Axi, Neo, Meso, Lith)
+- Total counts for each relic
+- Refinement breakdown (Intact, Exceptional, Flawless, Radiant)
+- Vault status for each relic
+
+---
+
+### 10. `get_my_stats`
+
+Get your personal trading and account statistics from Alecaframe.
+
+**Requirements:**
+- Alecaframe credentials must be configured (`WARFRAME_USER_HASH` and `WARFRAME_PUBLIC_TOKEN`)
+
+**Example queries:**
+- "Show me my trading stats"
+- "How much platinum have I earned?"
+- "What are my account statistics?"
+
+**Returns:**
+- Total number of trades
+- Total platinum earned
+- Total platinum spent
+- Net platinum (earned - spent)
+- Other account metrics
+
+---
+
 ## Example Conversations
 
 ### Finding what to farm
@@ -208,6 +249,37 @@ He'll be here for another 1 day and 8 hours."
 
 ---
 
+### Checking your account data
+
+**You:** "Show me my relic inventory and trading stats"
+
+**Claude (using the tools):**
+*Uses `get_my_relics` and `get_my_stats`*
+
+"Here's your account information:
+
+**Relic Inventory:**
+You have 47 unique relics across all eras:
+
+- Axi: 15 relics (including 3 vaulted)
+  - Axi A5: 8 total (2 Intact, 3 Exceptional, 2 Flawless, 1 Radiant) [VAULTED]
+  - Axi M3: 12 total (5 Intact, 4 Exceptional, 2 Flawless, 1 Radiant)
+  - [... more relics]
+
+- Neo: 18 relics
+- Meso: 10 relics
+- Lith: 4 relics
+
+**Trading Statistics:**
+- Total Trades: 127
+- Platinum Earned: 3,450
+- Platinum Spent: 1,890
+- Net Platinum: +1,560
+
+You have a healthy relic collection! I'd recommend focusing on running those vaulted Axi A5 relics while they're still valuable."
+
+---
+
 ## Configuration Tips
 
 ### Basic Setup (No Alecaframe)
@@ -237,8 +309,9 @@ To get personalized recommendations based on your relic inventory:
 ```
 
 With this setup, the server can:
-- Show which relics you own
-- Recommend which fissures to run based on your inventory
+- Show your complete relic inventory with the `get_my_relics` tool
+- Display your trading statistics with the `get_my_stats` tool
+- Provide personalized recommendations in the `recommend_prime_farming` tool
 - Help prioritize farming based on what you already have
 
 ---
