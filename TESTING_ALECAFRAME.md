@@ -23,10 +23,11 @@ Note: Relic inventory doesn't require the userHash, only the public token!
 ## Prerequisites
 
 1. **Get Your Alecaframe Credentials**
-   - Open Warframe
-   - Go to the Stats tab (ESC menu)
-   - Find your `userHash` (keep this private!)
-   - Generate a `public token` with 'relic' access enabled
+   - Go to [Alecaframe](https://alecaframe.com) and link your Warframe account if you haven't already
+   - Navigate to the "Stats" tab on Alecaframe
+   - Click on the "Data export & API" button
+   - Click "Copy my API token" - this is your `ALECAFRAME_USER_HASH` (keep this private!)
+   - For `ALECAFRAME_PUBLIC_TOKEN`: Location currently unknown - check Alecaframe documentation or contact support
 
 ## Method 1: Quick Test with curl (Recommended)
 

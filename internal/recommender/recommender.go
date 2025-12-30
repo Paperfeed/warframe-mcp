@@ -109,7 +109,7 @@ func (r *Recommender) RecommendPrimeParts() (*PrimePartRecommendation, error) {
 		if err == nil && inventory != nil {
 			for _, relic := range inventory.Relics {
 				if relic.Count > 0 {
-					userRelics = append(userRelics, fmt.Sprintf("%s %s (%d)", relic.Era, relic.Name, relic.Count))
+					userRelics = append(userRelics, fmt.Sprintf("%s %s (%s) x%d", relic.Type, relic.Name, relic.Refinement, relic.Count))
 				}
 			}
 		}

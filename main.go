@@ -333,35 +333,25 @@ Recommendation: %s`,
 		}
 
 		// Build a nice summary
-		result := fmt.Sprintf("=== Your Relic Inventory ===\n\nTotal unique relics: %d\n\n", len(inventory.Relics))
+		result := fmt.Sprintf("=== Your Relic Inventory ===\n\nTotal relic entries: %d\n\n", len(inventory.Relics))
 
-		// Group by era
-		byEra := make(map[string][]alecaframe.Relic)
+		// Group by type (era)
+		byType := make(map[string][]alecaframe.Relic)
 		for _, relic := range inventory.Relics {
-			byEra[relic.Era] = append(byEra[relic.Era], relic)
+			byType[relic.Type] = append(byType[relic.Type], relic)
 		}
 
 		// Display in order: Requiem, Axi, Neo, Meso, Lith
-		eras := []string{"Requiem", "Axi", "Neo", "Meso", "Lith"}
-		for _, era := range eras {
-			relics, ok := byEra[era]
+		types := []string{"Requiem", "Axi", "Neo", "Meso", "Lith"}
+		for _, relicType := range types {
+			relics, ok := byType[relicType]
 			if !ok || len(relics) == 0 {
 				continue
 			}
 
-			result += fmt.Sprintf("## %s Relics (%d)\n", era, len(relics))
+			result += fmt.Sprintf("## %s Relics (%d)\n", relicType, len(relics))
 			for _, relic := range relics {
-				vaulted := ""
-				if relic.IsVaulted {
-					vaulted = " [VAULTED]"
-				}
-				result += fmt.Sprintf("  %s %s: %d total%s\n", relic.Era, relic.Name, relic.Count, vaulted)
-
-				// Show refinement breakdown if available
-				if relic.Intact > 0 || relic.Exceptional > 0 || relic.Flawless > 0 || relic.Radiant > 0 {
-					result += fmt.Sprintf("    Intact: %d, Exceptional: %d, Flawless: %d, Radiant: %d\n",
-						relic.Intact, relic.Exceptional, relic.Flawless, relic.Radiant)
-				}
+				result += fmt.Sprintf("  %s %s (%s): %d\n", relic.Type, relic.Name, relic.Refinement, relic.Count)
 			}
 			result += "\n"
 		}

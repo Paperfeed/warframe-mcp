@@ -45,11 +45,12 @@ This creates `warframe-mcp.exe` in the current directory.
 
 For personalized recommendations based on your relic inventory:
 
-1. Open Warframe
-2. Navigate to the **Stats** tab (in ESC menu)
-3. Find and copy your **userHash** (keep this private!)
-4. Generate a **public token** with 'relic' access enabled
-5. Save these for the next step
+1. Go to [Alecaframe](https://alecaframe.com) and link your Warframe account if you haven't already
+2. Navigate to the "Stats" tab on Alecaframe
+3. Click on the "Data export & API" button
+4. Click "Copy my API token" - this is your `ALECAFRAME_USER_HASH` (keep this private!)
+5. For `ALECAFRAME_PUBLIC_TOKEN`: Location currently unknown - check Alecaframe documentation or contact support
+6. Save these for the next step
 
 ### 4. Configure Claude Desktop
 

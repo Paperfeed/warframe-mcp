@@ -166,10 +166,12 @@ Windows:
 ```
 
 To get your credentials:
-1. Open Warframe and go to the Stats tab
-2. Generate a public token with 'relic' access enabled
-3. Copy your userHash (keep this private!)
-4. Add them to the `env` section above
+1. Go to [Alecaframe](https://alecaframe.com) and link your Warframe account if you haven't already
+2. Navigate to the "Stats" tab on Alecaframe
+3. Click on the "Data export & API" button
+4. Click "Copy my API token" - this is your `ALECAFRAME_USER_HASH` (keep this private!)
+5. For `ALECAFRAME_PUBLIC_TOKEN`: Location currently unknown - check Alecaframe documentation or contact support
+6. Add both credentials to the `env` section above
 
 Restart Claude Desktop, and you'll see the Warframe tools available in conversations!
 

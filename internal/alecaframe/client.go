@@ -1,6 +1,8 @@
 package alecaframe
 
 import (
+	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,15 +39,10 @@ type RelicInventory struct {
 
 // Relic represents a single relic in the inventory
 type Relic struct {
-	Name      string `json:"name"`
-	Era       string `json:"era"`
-	Tier      string `json:"tier"`
-	Count     int    `json:"count"`
-	IsVaulted bool   `json:"isVaulted"`
-	Intact    int    `json:"intact"`
-	Radiant   int    `json:"radiant"`
-	Flawless  int    `json:"flawless"`
-	Exceptional int  `json:"exceptional"`
+	Type       string `json:"type"`       // Lith, Meso, Neo, Axi, Requiem
+	Refinement string `json:"refinement"` // Intact, Exceptional, Flawless, Radiant
+	Name       string `json:"name"`       // e.g., "L1", "B21"
+	Count      uint32 `json:"count"`      // Number of this specific relic
 }
 
 // UserStats represents user trading and account statistics
@@ -56,7 +53,48 @@ type UserStats struct {
 	// Add more fields based on actual API response
 }
 
+// relicTypeToString converts a relic type byte to a human-readable string
+func relicTypeToString(relicType uint8) string {
+	switch relicType {
+	case 0:
+		return "Lith"
+	case 1:
+		return "Meso"
+	case 2:
+		return "Neo"
+	case 3:
+		return "Axi"
+	case 4:
+		return "Requiem"
+	default:
+		return fmt.Sprintf("Unknown(%d)", relicType)
+	}
+}
+
+// refinementToString converts a refinement byte to a human-readable string
+func refinementToString(refinement uint8) string {
+	switch refinement {
+	case 0:
+		return "Intact"
+	case 1, 4:
+		return "Exceptional"
+	case 2, 5:
+		return "Flawless"
+	case 3, 6:
+		return "Radiant"
+	default:
+		return fmt.Sprintf("Unknown(%d)", refinement)
+	}
+}
+
 // GetRelicInventory fetches the user's relic inventory
+// The API returns binary data in the following format (little endian):
+// - Uint32: Number of relics
+// - For each relic (9 bytes):
+//   - Uint8: Relic type (0=Lith, 1=Meso, 2=Neo, 3=Axi, 4=Requiem)
+//   - Uint8: Relic refinement (0=Intact, 1=Exceptional, 2=Flawless, 3=Radiant)
+//   - char[3]: Name (e.g., "L1", "B21")
+//   - Uint32: Count
 func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 	url := fmt.Sprintf("%s/stats/public/getRelicInventory?publicToken=%s", baseURL, c.publicToken)
 
@@ -65,7 +103,7 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", "application/octet-stream")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -78,12 +116,62 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
-	var inventory RelicInventory
-	if err := json.NewDecoder(resp.Body).Decode(&inventory); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
+	// Read base64 encoded response
+	base64Data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response body: %w", err)
 	}
 
-	return &inventory, nil
+	// Decode from base64
+	data, err := base64.StdEncoding.DecodeString(string(base64Data))
+	if err != nil {
+		return nil, fmt.Errorf("decoding base64 response: %w", err)
+	}
+
+	// Check minimum size (at least 4 bytes for the count)
+	if len(data) < 4 {
+		return nil, fmt.Errorf("response too short: got %d bytes, need at least 4", len(data))
+	}
+
+	// Read number of relics (little endian Uint32)
+	numRelics := binary.LittleEndian.Uint32(data[0:4])
+
+	// Validate data size
+	expectedSize := 4 + (numRelics * 9)
+	if uint32(len(data)) != expectedSize {
+		return nil, fmt.Errorf("unexpected data size: got %d bytes, expected %d for %d relics", len(data), expectedSize, numRelics)
+	}
+
+	// Parse each relic (9 bytes each)
+	relics := make([]Relic, 0, numRelics)
+	offset := uint32(4)
+
+	for i := uint32(0); i < numRelics; i++ {
+		relicType := data[offset]
+		refinement := data[offset+1]
+		nameBytes := data[offset+2 : offset+5]
+		count := binary.LittleEndian.Uint32(data[offset+5 : offset+9])
+
+		// Convert name bytes to string (null-terminated)
+		name := string(nameBytes)
+		for idx := 0; idx < len(name); idx++ {
+			if name[idx] == 0 {
+				name = name[:idx]
+				break
+			}
+		}
+
+		relics = append(relics, Relic{
+			Type:       relicTypeToString(relicType),
+			Refinement: refinementToString(refinement),
+			Name:       name,
+			Count:      count,
+		})
+
+		offset += 9
+	}
+
+	return &RelicInventory{Relics: relics}, nil
 }
 
 // GetUserStats fetches the user's trading and account statistics
