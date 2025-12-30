@@ -128,9 +128,9 @@ type SyndicateMission struct {
 
 // Job represents a syndicate job
 type Job struct {
-	ID             string   `json:"id"`
-	Type           string   `json:"type"`
-	StandingReward int      `json:"standingStages"`
+	ID             string `json:"id"`
+	Type           string `json:"type"`
+	StandingStages []int  `json:"standingStages"`
 }
 
 // Fissure represents a void fissure

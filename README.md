@@ -225,6 +225,32 @@ warframe-mcp/
 └── README.md                        # This file
 ```
 
+## Testing
+
+The project includes comprehensive tests for all components. Run tests using:
+
+```bash
+# Run all tests
+make test
+
+# Run tests with verbose output
+make test-verbose
+
+# Run tests with coverage report
+make test-coverage
+
+# Run specific package tests
+make test-worldstate
+make test-market
+make test-recommender
+```
+
+Or use Go directly:
+```bash
+go test ./...
+go test ./internal/worldstate -v
+```
+
 ## Contributing
 
 Contributions are welcome! Feel free to:
@@ -232,6 +258,11 @@ Contributions are welcome! Feel free to:
 - Submit pull requests with improvements
 - Add support for additional Warframe APIs
 - Improve recommendation algorithms
+
+Before submitting a PR:
+- Run `make test` to ensure all tests pass
+- Run `make fmt` to format your code
+- Add tests for new functionality
 
 ## License
 
