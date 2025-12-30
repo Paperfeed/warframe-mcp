@@ -39,21 +39,22 @@ See [USAGE.md](USAGE.md) for detailed documentation and examples.
 
 ### Configuration
 
-**Option 1: Basic Setup (No Alecaframe)**
+The server supports three configuration methods (in order of precedence):
 
-No configuration needed! The server will work with all features except personalized relic inventory.
+**Option 1: Environment Variables (Recommended for MCP)**
 
-**Option 2: Full Setup (With Alecaframe - Recommended)**
+Set environment variables in your MCP server configuration:
+- `WARFRAME_USER_HASH` - Your Alecaframe user hash
+- `WARFRAME_PUBLIC_TOKEN` - Your Alecaframe public token
 
-1. Get your Alecaframe credentials:
-   - Visit the Stats tab in Warframe
-   - Generate a public token with 'relic' access
-   - Note your userHash (keep this private!)
+This is the easiest method when using with Claude Desktop or other MCP clients.
 
-2. Create a `config.json` in one of these locations:
-   - Current directory: `./config.json`
-   - Home directory: `~/.config/warframe-mcp/config.json`
-   - System: `/etc/warframe-mcp/config.json`
+**Option 2: Config File**
+
+Create a `config.json` in one of these locations:
+- Current directory: `./config.json`
+- Home directory: `~/.config/warframe-mcp/config.json`
+- System: `/etc/warframe-mcp/config.json`
 
 ```json
 {
@@ -70,6 +71,10 @@ No configuration needed! The server will work with all features except personali
 
 See `config.example.json` for a template.
 
+**Option 3: No Configuration**
+
+The server will work without any configuration, but Alecaframe features (personalized relic inventory) will be disabled.
+
 ### Installation
 
 ```bash
@@ -78,18 +83,41 @@ go build -o warframe-mcp
 
 ### Usage with Claude Desktop
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
+
+**Option 1: Basic Setup (No Alecaframe)**
+
+```json
+{
+  "mcpServers": {
+    "warframe": {
+      "command": "/absolute/path/to/warframe-mcp"
+    }
+  }
+}
+```
+
+**Option 2: With Alecaframe Credentials (Recommended)**
 
 ```json
 {
   "mcpServers": {
     "warframe": {
       "command": "/absolute/path/to/warframe-mcp",
-      "args": []
+      "env": {
+        "WARFRAME_USER_HASH": "your-user-hash-here",
+        "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
+      }
     }
   }
 }
 ```
+
+To get your credentials:
+1. Open Warframe and go to the Stats tab
+2. Generate a public token with 'relic' access enabled
+3. Copy your userHash (keep this private!)
+4. Add them to the `env` section above
 
 Restart Claude Desktop, and you'll see the Warframe tools available in conversations!
 

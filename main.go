@@ -60,6 +60,25 @@ func run() error {
 }
 
 func loadConfig() (*config.Config, error) {
+	// Start with default config
+	cfg := &config.Config{
+		Cache: config.CacheConfig{
+			WorldStateTTL: 300,
+			MarketDataTTL: 600,
+		},
+	}
+
+	// Check for environment variables first (takes precedence)
+	userHash := os.Getenv("WARFRAME_USER_HASH")
+	publicToken := os.Getenv("WARFRAME_PUBLIC_TOKEN")
+
+	if userHash != "" && publicToken != "" {
+		cfg.Alecaframe.UserHash = userHash
+		cfg.Alecaframe.PublicToken = publicToken
+		log.Println("Using Alecaframe credentials from environment variables")
+		return cfg, nil
+	}
+
 	// Try to load config.json from current directory or home directory
 	paths := []string{
 		"config.json",
@@ -69,18 +88,18 @@ func loadConfig() (*config.Config, error) {
 
 	for _, path := range paths {
 		if _, err := os.Stat(path); err == nil {
-			return config.Load(path)
+			fileCfg, err := config.Load(path)
+			if err != nil {
+				return nil, err
+			}
+			log.Printf("Loaded config from %s\n", path)
+			return fileCfg, nil
 		}
 	}
 
-	// Return default config if no config file found
-	log.Println("Warning: No config file found, using defaults (Alecaframe features disabled)")
-	return &config.Config{
-		Cache: config.CacheConfig{
-			WorldStateTTL: 300,
-			MarketDataTTL: 600,
-		},
-	}, nil
+	// No config file or env vars found
+	log.Println("Warning: No config file or environment variables found, using defaults (Alecaframe features disabled)")
+	return cfg, nil
 }
 
 func registerTools(s *server.MCPServer, rec *recommender.Recommender, wsClient *worldstate.Client, mClient *market.Client) {
