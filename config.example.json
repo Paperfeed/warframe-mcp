@@ -1,0 +1,10 @@
+{
+  "alecaframe": {
+    "userHash": "your-anonymous-user-hash",
+    "publicToken": "your-public-token-with-relic-access"
+  },
+  "cache": {
+    "worldStateTTL": 300,
+    "marketDataTTL": 600
+  }
+}
