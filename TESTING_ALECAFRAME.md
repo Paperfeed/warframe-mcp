@@ -1,6 +1,24 @@
 # Testing Alecaframe API Integration
 
-This guide helps you test the Alecaframe API locally to verify your credentials and find the correct endpoints.
+This guide helps you test the Alecaframe API locally to verify your credentials.
+
+## Correct API Endpoints (Updated)
+
+Based on the Alecaframe Swagger documentation at https://stats.alecaframe.com/api/swagger/index.html:
+
+1. **Get User Stats**: `/api/stats/{userHash}?secretToken={token}`
+   ```bash
+   curl -H 'accept: application/json' \
+     'https://stats.alecaframe.com/api/stats/YOUR_HASH?secretToken=YOUR_TOKEN'
+   ```
+
+2. **Get Relic Inventory**: `/api/stats/public/getRelicInventory?publicToken={token}`
+   ```bash
+   curl -H 'accept: application/json' \
+     'https://stats.alecaframe.com/api/stats/public/getRelicInventory?publicToken=YOUR_TOKEN'
+   ```
+
+Note: Relic inventory doesn't require the userHash, only the public token!
 
 ## Prerequisites
 
@@ -10,37 +28,24 @@ This guide helps you test the Alecaframe API locally to verify your credentials 
    - Find your `userHash` (keep this private!)
    - Generate a `public token` with 'relic' access enabled
 
-## Method 1: Using the Test Utility (Recommended)
+## Method 1: Quick Test with curl (Recommended)
 
-We've created a test utility that tries different URL patterns and authentication methods to find what works:
+Test directly using the correct endpoints:
 
 ```bash
-# Using command-line flags
-go run cmd/test-alecaframe/main.go \
-  -hash YOUR_USER_HASH \
-  -token YOUR_PUBLIC_TOKEN \
-  -endpoint relics
+# Test relic inventory (doesn't need userHash)
+curl -v -H 'accept: application/json' \
+  'https://stats.alecaframe.com/api/stats/public/getRelicInventory?publicToken=YOUR_TOKEN'
 
-# Or using environment variables
-export ALECAFRAME_USER_HASH="your-user-hash"
-export ALECAFRAME_PUBLIC_TOKEN="your-public-token"
-go run cmd/test-alecaframe/main.go -endpoint relics
+# Test user stats (needs both userHash and token)
+curl -v -H 'accept: application/json' \
+  'https://stats.alecaframe.com/api/stats/YOUR_HASH?secretToken=YOUR_TOKEN'
 ```
 
-**Test both endpoints:**
-```bash
-# Test relics endpoint
-go run cmd/test-alecaframe/main.go -endpoint relics
-
-# Test stats endpoint
-go run cmd/test-alecaframe/main.go -endpoint stats
-```
-
-The utility will:
-- Try different base URLs (`stats.alecaframe.com/api`, `api.alecaframe.com`, etc.)
-- Try different endpoint patterns (`/relics/{hash}`, `/users/{hash}/relics`, etc.)
-- Try different authentication methods (Bearer token, API key header, query parameter, etc.)
-- Show you which combination works with your credentials
+Expected responses:
+- **200 OK**: Success! You'll see your data
+- **401 Unauthorized**: Wrong or expired token
+- **404 Not Found**: Wrong userHash
 
 ## Method 2: Manual Testing with cURL
 

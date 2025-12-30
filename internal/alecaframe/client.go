@@ -58,17 +58,14 @@ type UserStats struct {
 
 // GetRelicInventory fetches the user's relic inventory
 func (c *Client) GetRelicInventory() (*RelicInventory, error) {
-	url := fmt.Sprintf("%s/relics/%s", baseURL, c.userHash)
+	url := fmt.Sprintf("%s/stats/public/getRelicInventory?publicToken=%s", baseURL, c.publicToken)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	// Add authorization header if public token is provided
-	if c.publicToken != "" {
-		req.Header.Set("Authorization", "Bearer "+c.publicToken)
-	}
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -91,12 +88,14 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 
 // GetUserStats fetches the user's trading and account statistics
 func (c *Client) GetUserStats() (*UserStats, error) {
-	url := fmt.Sprintf("%s/stats/%s", baseURL, c.userHash)
+	url := fmt.Sprintf("%s/stats/%s?secretToken=%s", baseURL, c.userHash, c.publicToken)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
+
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
