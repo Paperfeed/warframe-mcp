@@ -84,6 +84,13 @@ See `config.example.json` for a template.
 
 The server will work without any configuration, but Alecaframe features (personalized relic inventory) will be disabled.
 
+**Testing Alecaframe Integration:**
+
+If you're having issues with Alecaframe tools (404 or 401 errors), see [TESTING_ALECAFRAME.md](TESTING_ALECAFRAME.md) for a comprehensive testing guide including:
+- Automated endpoint discovery tool
+- Manual curl testing commands
+- Troubleshooting common issues
+
 ### Installation
 
 **On macOS/Linux:**
