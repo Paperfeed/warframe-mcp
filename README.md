@@ -77,9 +77,17 @@ The server will work without any configuration, but Alecaframe features (persona
 
 ### Installation
 
+**On macOS/Linux:**
 ```bash
 go build -o warframe-mcp
 ```
+
+**On Windows (PowerShell or Command Prompt):**
+```powershell
+go build -o warframe-mcp.exe
+```
+
+> 📝 **Windows Users:** See [WINDOWS_SETUP.md](WINDOWS_SETUP.md) for a complete step-by-step Windows setup guide with troubleshooting tips.
 
 ### Usage with Claude Desktop
 
@@ -87,6 +95,7 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 
 **Option 1: Basic Setup (No Alecaframe)**
 
+macOS/Linux:
 ```json
 {
   "mcpServers": {
@@ -97,13 +106,40 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 }
 ```
 
+Windows:
+```json
+{
+  "mcpServers": {
+    "warframe": {
+      "command": "C:\\Users\\YourUsername\\path\\to\\warframe-mcp.exe"
+    }
+  }
+}
+```
+
 **Option 2: With Alecaframe Credentials (Recommended)**
 
+macOS/Linux:
 ```json
 {
   "mcpServers": {
     "warframe": {
       "command": "/absolute/path/to/warframe-mcp",
+      "env": {
+        "WARFRAME_USER_HASH": "your-user-hash-here",
+        "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
+      }
+    }
+  }
+}
+```
+
+Windows:
+```json
+{
+  "mcpServers": {
+    "warframe": {
+      "command": "C:\\Users\\YourUsername\\path\\to\\warframe-mcp.exe",
       "env": {
         "WARFRAME_USER_HASH": "your-user-hash-here",
         "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
