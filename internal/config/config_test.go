@@ -14,7 +14,6 @@ func TestLoadConfig(t *testing.T) {
 
 	configContent := `{
 		"alecaframe": {
-			"userHash": "test-hash",
 			"publicToken": "test-token"
 		},
 		"cache": {
@@ -35,10 +34,6 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	// Verify Alecaframe config
-	if cfg.Alecaframe.UserHash != "test-hash" {
-		t.Errorf("Expected userHash to be 'test-hash', got %q", cfg.Alecaframe.UserHash)
-	}
-
 	if cfg.Alecaframe.PublicToken != "test-token" {
 		t.Errorf("Expected publicToken to be 'test-token', got %q", cfg.Alecaframe.PublicToken)
 	}

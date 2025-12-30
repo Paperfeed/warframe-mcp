@@ -109,7 +109,7 @@ func TestRecommenderWithAlecaframe(t *testing.T) {
 	// This test requires actual credentials, so we skip if not available
 	t.Skip("Skipping Alecaframe integration test (requires credentials)")
 
-	aClient := alecaframe.NewClient("test-hash", "test-token")
+	aClient := alecaframe.NewClient("test-token")
 	wsClient := worldstate.NewClient(5 * time.Minute)
 	mClient := market.NewClient(10 * time.Minute)
 

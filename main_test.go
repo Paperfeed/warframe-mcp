@@ -11,18 +11,12 @@ import (
 
 func TestLoadConfigWithEnvVars(t *testing.T) {
 	// Set environment variables
-	os.Setenv("ALECAFRAME_USER_HASH", "test-hash-env")
 	os.Setenv("ALECAFRAME_PUBLIC_TOKEN", "test-token-env")
-	defer os.Unsetenv("ALECAFRAME_USER_HASH")
 	defer os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	cfg, err := loadConfig()
 	if err != nil {
 		t.Fatalf("loadConfig() failed: %v", err)
-	}
-
-	if cfg.Alecaframe.UserHash != "test-hash-env" {
-		t.Errorf("Expected userHash from env to be 'test-hash-env', got %q", cfg.Alecaframe.UserHash)
 	}
 
 	if cfg.Alecaframe.PublicToken != "test-token-env" {
@@ -32,7 +26,6 @@ func TestLoadConfigWithEnvVars(t *testing.T) {
 
 func TestLoadConfigWithFile(t *testing.T) {
 	// Ensure no env vars are set
-	os.Unsetenv("ALECAFRAME_USER_HASH")
 	os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Create a temporary config file
@@ -41,7 +34,6 @@ func TestLoadConfigWithFile(t *testing.T) {
 
 	configContent := `{
 		"alecaframe": {
-			"userHash": "test-hash-file",
 			"publicToken": "test-token-file"
 		},
 		"cache": {
@@ -65,10 +57,6 @@ func TestLoadConfigWithFile(t *testing.T) {
 		t.Fatalf("loadConfig() failed: %v", err)
 	}
 
-	if cfg.Alecaframe.UserHash != "test-hash-file" {
-		t.Errorf("Expected userHash from file to be 'test-hash-file', got %q", cfg.Alecaframe.UserHash)
-	}
-
 	if cfg.Alecaframe.PublicToken != "test-token-file" {
 		t.Errorf("Expected publicToken from file to be 'test-token-file', got %q", cfg.Alecaframe.PublicToken)
 	}
@@ -76,7 +64,6 @@ func TestLoadConfigWithFile(t *testing.T) {
 
 func TestLoadConfigDefaults(t *testing.T) {
 	// Ensure no env vars or config files
-	os.Unsetenv("ALECAFRAME_USER_HASH")
 	os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Change to a temp directory with no config
@@ -100,8 +87,8 @@ func TestLoadConfigDefaults(t *testing.T) {
 	}
 
 	// Alecaframe should be empty
-	if cfg.Alecaframe.UserHash != "" {
-		t.Errorf("Expected empty userHash with defaults, got %q", cfg.Alecaframe.UserHash)
+	if cfg.Alecaframe.PublicToken != "" {
+		t.Errorf("Expected empty publicToken with defaults, got %q", cfg.Alecaframe.PublicToken)
 	}
 }
 
@@ -112,7 +99,6 @@ func TestLoadConfigEnvPrecedence(t *testing.T) {
 
 	configContent := `{
 		"alecaframe": {
-			"userHash": "test-hash-file",
 			"publicToken": "test-token-file"
 		}
 	}`
@@ -123,9 +109,7 @@ func TestLoadConfigEnvPrecedence(t *testing.T) {
 	}
 
 	// Set environment variables (should take precedence)
-	os.Setenv("ALECAFRAME_USER_HASH", "test-hash-env")
 	os.Setenv("ALECAFRAME_PUBLIC_TOKEN", "test-token-env")
-	defer os.Unsetenv("ALECAFRAME_USER_HASH")
 	defer os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Change to temp directory
@@ -139,10 +123,6 @@ func TestLoadConfigEnvPrecedence(t *testing.T) {
 	}
 
 	// Environment variables should win
-	if cfg.Alecaframe.UserHash != "test-hash-env" {
-		t.Errorf("Expected env vars to take precedence, got userHash %q", cfg.Alecaframe.UserHash)
-	}
-
 	if cfg.Alecaframe.PublicToken != "test-token-env" {
 		t.Errorf("Expected env vars to take precedence, got publicToken %q", cfg.Alecaframe.PublicToken)
 	}

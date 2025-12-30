@@ -35,8 +35,8 @@ func run() error {
 
 	// Initialize API clients
 	var alecaframeClient *alecaframe.Client
-	if cfg.Alecaframe.UserHash != "" && cfg.Alecaframe.PublicToken != "" {
-		alecaframeClient = alecaframe.NewClient(cfg.Alecaframe.UserHash, cfg.Alecaframe.PublicToken)
+	if cfg.Alecaframe.PublicToken != "" {
+		alecaframeClient = alecaframe.NewClient(cfg.Alecaframe.PublicToken)
 	}
 
 	worldStateClient := worldstate.NewClient(cfg.Cache.GetWorldStateTTL())
@@ -69,11 +69,9 @@ func loadConfig() (*config.Config, error) {
 	}
 
 	// Check for environment variables first (takes precedence)
-	userHash := os.Getenv("ALECAFRAME_USER_HASH")
 	publicToken := os.Getenv("ALECAFRAME_PUBLIC_TOKEN")
 
-	if userHash != "" && publicToken != "" {
-		cfg.Alecaframe.UserHash = userHash
+	if publicToken != "" {
 		cfg.Alecaframe.PublicToken = publicToken
 		log.Println("Using Alecaframe credentials from environment variables")
 		return cfg, nil
@@ -320,7 +318,7 @@ Recommendation: %s`,
 		},
 	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
 		if aClient == nil {
-			return mcp.NewToolResultError("Alecaframe is not configured. Please set ALECAFRAME_USER_HASH and ALECAFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
+			return mcp.NewToolResultError("Alecaframe is not configured. Please set ALECAFRAME_PUBLIC_TOKEN environment variable or create a config.json file."), nil
 		}
 
 		inventory, err := aClient.GetRelicInventory()
@@ -355,41 +353,6 @@ Recommendation: %s`,
 			}
 			result += "\n"
 		}
-
-		return mcp.NewToolResultText(result), nil
-	})
-
-	// Tool: Get user's trading statistics (Alecaframe)
-	s.AddTool(mcp.Tool{
-		Name:        "get_my_stats",
-		Description: "Get your personal trading and account statistics from Alecaframe. Requires Alecaframe credentials to be configured. Shows total trades, platinum earned/spent, and other account metrics.",
-		InputSchema: mcp.ToolInputSchema{
-			Type:       "object",
-			Properties: map[string]interface{}{},
-		},
-	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
-		if aClient == nil {
-			return mcp.NewToolResultError("Alecaframe is not configured. Please set ALECAFRAME_USER_HASH and ALECAFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
-		}
-
-		stats, err := aClient.GetUserStats()
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error fetching user stats: %v", err)), nil
-		}
-
-		result := fmt.Sprintf(`=== Your Warframe Statistics ===
-
-Trading:
-  Total Trades: %d
-  Platinum Earned: %d
-  Platinum Spent: %d
-  Net Platinum: %d
-`,
-			stats.TotalTrades,
-			stats.PlatinumEarned,
-			stats.PlatinumSpent,
-			stats.PlatinumEarned-stats.PlatinumSpent,
-		)
 
 		return mcp.NewToolResultText(result), nil
 	})

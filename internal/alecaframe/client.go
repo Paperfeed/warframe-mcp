@@ -18,17 +18,15 @@ const (
 // Client is an Alecaframe API client
 type Client struct {
 	httpClient  *http.Client
-	userHash    string
 	publicToken string
 }
 
 // NewClient creates a new Alecaframe API client
-func NewClient(userHash, publicToken string) *Client {
+func NewClient(publicToken string) *Client {
 	return &Client{
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
 		},
-		userHash:    userHash,
 		publicToken: publicToken,
 	}
 }
@@ -44,14 +42,6 @@ type Relic struct {
 	Refinement string `json:"refinement"` // Intact, Exceptional, Flawless, Radiant
 	Name       string `json:"name"`       // e.g., "L1", "B21"
 	Count      uint32 `json:"count"`      // Number of this specific relic
-}
-
-// UserStats represents user trading and account statistics
-type UserStats struct {
-	TotalTrades   int     `json:"totalTrades"`
-	PlatinumEarned int    `json:"platinumEarned"`
-	PlatinumSpent  int    `json:"platinumSpent"`
-	// Add more fields based on actual API response
 }
 
 // relicTypeToString converts a relic type byte to a human-readable string
@@ -173,38 +163,4 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 	}
 
 	return &RelicInventory{Relics: relics}, nil
-}
-
-// GetUserStats fetches the user's trading and account statistics
-// NOTE: This endpoint requires a secretToken which may be different from publicToken.
-// Currently using publicToken as secretToken - if you get 401 errors, you may need
-// to obtain a separate secretToken from Alecaframe.
-func (c *Client) GetUserStats() (*UserStats, error) {
-	// Using publicToken as secretToken for now - this may need to be a separate credential
-	endpoint := fmt.Sprintf("%s/stats/%s?secretToken=%s", baseURL, url.PathEscape(c.userHash), url.QueryEscape(c.publicToken))
-
-	req, err := http.NewRequest("GET", endpoint, nil)
-	if err != nil {
-		return nil, fmt.Errorf("creating request: %w", err)
-	}
-
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("executing request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
-	}
-
-	var stats UserStats
-	if err := json.NewDecoder(resp.Body).Decode(&stats); err != nil {
-		return nil, fmt.Errorf("decoding response: %w", err)
-	}
-
-	return &stats, nil
 }

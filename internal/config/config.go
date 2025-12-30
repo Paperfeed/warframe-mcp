@@ -14,7 +14,6 @@ type Config struct {
 
 // AlecaframeConfig holds Alecaframe API credentials
 type AlecaframeConfig struct {
-	UserHash    string `json:"userHash"`
 	PublicToken string `json:"publicToken"`
 }
 
