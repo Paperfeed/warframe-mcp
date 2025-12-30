@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -96,9 +97,9 @@ func refinementToString(refinement uint8) string {
 //   - char[3]: Name (e.g., "L1", "B21")
 //   - Uint32: Count
 func (c *Client) GetRelicInventory() (*RelicInventory, error) {
-	url := fmt.Sprintf("%s/stats/public/getRelicInventory?publicToken=%s", baseURL, c.publicToken)
+	endpoint := fmt.Sprintf("%s/stats/public/getRelicInventory?publicToken=%s", baseURL, url.QueryEscape(c.publicToken))
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -116,14 +117,14 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
-	// Read base64 encoded response
-	base64Data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response body: %w", err)
+	// The API returns a JSON string containing base64 data
+	var base64String string
+	if err := json.NewDecoder(resp.Body).Decode(&base64String); err != nil {
+		return nil, fmt.Errorf("decoding JSON response: %w", err)
 	}
 
 	// Decode from base64
-	data, err := base64.StdEncoding.DecodeString(string(base64Data))
+	data, err := base64.StdEncoding.DecodeString(base64String)
 	if err != nil {
 		return nil, fmt.Errorf("decoding base64 response: %w", err)
 	}
@@ -175,10 +176,14 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 }
 
 // GetUserStats fetches the user's trading and account statistics
+// NOTE: This endpoint requires a secretToken which may be different from publicToken.
+// Currently using publicToken as secretToken - if you get 401 errors, you may need
+// to obtain a separate secretToken from Alecaframe.
 func (c *Client) GetUserStats() (*UserStats, error) {
-	url := fmt.Sprintf("%s/stats/%s?secretToken=%s", baseURL, c.userHash, c.publicToken)
+	// Using publicToken as secretToken for now - this may need to be a separate credential
+	endpoint := fmt.Sprintf("%s/stats/%s?secretToken=%s", baseURL, url.PathEscape(c.userHash), url.QueryEscape(c.publicToken))
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
