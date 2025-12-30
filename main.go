@@ -69,8 +69,8 @@ func loadConfig() (*config.Config, error) {
 	}
 
 	// Check for environment variables first (takes precedence)
-	userHash := os.Getenv("WARFRAME_USER_HASH")
-	publicToken := os.Getenv("WARFRAME_PUBLIC_TOKEN")
+	userHash := os.Getenv("ALECAFRAME_USER_HASH")
+	publicToken := os.Getenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	if userHash != "" && publicToken != "" {
 		cfg.Alecaframe.UserHash = userHash
@@ -320,7 +320,7 @@ Recommendation: %s`,
 		},
 	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
 		if aClient == nil {
-			return mcp.NewToolResultError("Alecaframe is not configured. Please set WARFRAME_USER_HASH and WARFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
+			return mcp.NewToolResultError("Alecaframe is not configured. Please set ALECAFRAME_USER_HASH and ALECAFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
 		}
 
 		inventory, err := aClient.GetRelicInventory()
@@ -379,7 +379,7 @@ Recommendation: %s`,
 		},
 	}, func(args map[string]interface{}) (*mcp.CallToolResult, error) {
 		if aClient == nil {
-			return mcp.NewToolResultError("Alecaframe is not configured. Please set WARFRAME_USER_HASH and WARFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
+			return mcp.NewToolResultError("Alecaframe is not configured. Please set ALECAFRAME_USER_HASH and ALECAFRAME_PUBLIC_TOKEN environment variables or create a config.json file."), nil
 		}
 
 		stats, err := aClient.GetUserStats()

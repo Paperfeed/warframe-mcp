@@ -11,10 +11,10 @@ import (
 
 func TestLoadConfigWithEnvVars(t *testing.T) {
 	// Set environment variables
-	os.Setenv("WARFRAME_USER_HASH", "test-hash-env")
-	os.Setenv("WARFRAME_PUBLIC_TOKEN", "test-token-env")
-	defer os.Unsetenv("WARFRAME_USER_HASH")
-	defer os.Unsetenv("WARFRAME_PUBLIC_TOKEN")
+	os.Setenv("ALECAFRAME_USER_HASH", "test-hash-env")
+	os.Setenv("ALECAFRAME_PUBLIC_TOKEN", "test-token-env")
+	defer os.Unsetenv("ALECAFRAME_USER_HASH")
+	defer os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	cfg, err := loadConfig()
 	if err != nil {
@@ -32,8 +32,8 @@ func TestLoadConfigWithEnvVars(t *testing.T) {
 
 func TestLoadConfigWithFile(t *testing.T) {
 	// Ensure no env vars are set
-	os.Unsetenv("WARFRAME_USER_HASH")
-	os.Unsetenv("WARFRAME_PUBLIC_TOKEN")
+	os.Unsetenv("ALECAFRAME_USER_HASH")
+	os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Create a temporary config file
 	tmpDir := t.TempDir()
@@ -76,8 +76,8 @@ func TestLoadConfigWithFile(t *testing.T) {
 
 func TestLoadConfigDefaults(t *testing.T) {
 	// Ensure no env vars or config files
-	os.Unsetenv("WARFRAME_USER_HASH")
-	os.Unsetenv("WARFRAME_PUBLIC_TOKEN")
+	os.Unsetenv("ALECAFRAME_USER_HASH")
+	os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Change to a temp directory with no config
 	tmpDir := t.TempDir()
@@ -123,10 +123,10 @@ func TestLoadConfigEnvPrecedence(t *testing.T) {
 	}
 
 	// Set environment variables (should take precedence)
-	os.Setenv("WARFRAME_USER_HASH", "test-hash-env")
-	os.Setenv("WARFRAME_PUBLIC_TOKEN", "test-token-env")
-	defer os.Unsetenv("WARFRAME_USER_HASH")
-	defer os.Unsetenv("WARFRAME_PUBLIC_TOKEN")
+	os.Setenv("ALECAFRAME_USER_HASH", "test-hash-env")
+	os.Setenv("ALECAFRAME_PUBLIC_TOKEN", "test-token-env")
+	defer os.Unsetenv("ALECAFRAME_USER_HASH")
+	defer os.Unsetenv("ALECAFRAME_PUBLIC_TOKEN")
 
 	// Change to temp directory
 	oldWd, _ := os.Getwd()

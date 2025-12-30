@@ -152,7 +152,7 @@ Search for tradeable items on warframe.market by name.
 Get your personal relic inventory from Alecaframe.
 
 **Requirements:**
-- Alecaframe credentials must be configured (`WARFRAME_USER_HASH` and `WARFRAME_PUBLIC_TOKEN`)
+- Alecaframe credentials must be configured (`ALECAFRAME_USER_HASH` and `ALECAFRAME_PUBLIC_TOKEN`)
 
 **Example queries:**
 - "Show me my relic inventory"
@@ -172,7 +172,7 @@ Get your personal relic inventory from Alecaframe.
 Get your personal trading and account statistics from Alecaframe.
 
 **Requirements:**
-- Alecaframe credentials must be configured (`WARFRAME_USER_HASH` and `WARFRAME_PUBLIC_TOKEN`)
+- Alecaframe credentials must be configured (`ALECAFRAME_USER_HASH` and `ALECAFRAME_PUBLIC_TOKEN`)
 
 **Example queries:**
 - "Show me my trading stats"

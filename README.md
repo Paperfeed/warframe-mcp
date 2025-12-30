@@ -53,8 +53,8 @@ The server supports three configuration methods (in order of precedence):
 **Option 1: Environment Variables (Recommended for MCP)**
 
 Set environment variables in your MCP server configuration:
-- `WARFRAME_USER_HASH` - Your Alecaframe user hash
-- `WARFRAME_PUBLIC_TOKEN` - Your Alecaframe public token
+- `ALECAFRAME_USER_HASH` - Your Alecaframe user hash
+- `ALECAFRAME_PUBLIC_TOKEN` - Your Alecaframe public token
 
 This is the easiest method when using with Claude Desktop or other MCP clients.
 
@@ -135,8 +135,8 @@ macOS/Linux:
     "warframe": {
       "command": "/absolute/path/to/warframe-mcp",
       "env": {
-        "WARFRAME_USER_HASH": "your-user-hash-here",
-        "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
+        "ALECAFRAME_USER_HASH": "your-user-hash-here",
+        "ALECAFRAME_PUBLIC_TOKEN": "your-public-token-here"
       }
     }
   }
@@ -150,8 +150,8 @@ Windows:
     "warframe": {
       "command": "C:\\Users\\YourUsername\\path\\to\\warframe-mcp.exe",
       "env": {
-        "WARFRAME_USER_HASH": "your-user-hash-here",
-        "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
+        "ALECAFRAME_USER_HASH": "your-user-hash-here",
+        "ALECAFRAME_PUBLIC_TOKEN": "your-public-token-here"
       }
     }
   }

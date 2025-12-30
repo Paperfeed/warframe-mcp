@@ -88,8 +88,8 @@ To open it:
     "warframe": {
       "command": "C:\\warframe-mcp\\warframe-mcp.exe",
       "env": {
-        "WARFRAME_USER_HASH": "your-user-hash-here",
-        "WARFRAME_PUBLIC_TOKEN": "your-public-token-here"
+        "ALECAFRAME_USER_HASH": "your-user-hash-here",
+        "ALECAFRAME_PUBLIC_TOKEN": "your-public-token-here"
       }
     }
   }
