@@ -38,6 +38,20 @@ func main() {
 		}
 		fmt.Println()
 	}
+
+	// Test 2: Get User Stats
+	fmt.Println("=== Test 2: Get User Stats ===")
+	stats, err := client.GetUserStats()
+	if err != nil {
+		fmt.Printf("❌ Error: %v\n\n", err)
+	} else {
+		fmt.Printf("✅ Success!\n")
+		fmt.Printf("Total Trades: %d\n", stats.TotalTrades)
+		fmt.Printf("Platinum Earned: %d\n", stats.PlatinumEarned)
+		fmt.Printf("Platinum Spent: %d\n", stats.PlatinumSpent)
+		fmt.Printf("Net Platinum: %d\n", stats.PlatinumEarned-stats.PlatinumSpent)
+		fmt.Println()
+	}
 }
 
 func maskString(s string, showChars int) string {

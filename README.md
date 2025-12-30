@@ -17,7 +17,7 @@ A Model Context Protocol (MCP) server for Warframe that provides intelligent rec
 
 ## Available Tools
 
-The MCP server provides 9 powerful tools:
+The MCP server provides 10 powerful tools:
 
 ### Recommendations
 1. **recommend_prime_farming** - Get personalized prime part farming recommendations
@@ -35,6 +35,7 @@ The MCP server provides 9 powerful tools:
 
 ### Your Account (Requires Alecaframe)
 9. **get_my_relics** - View your personal relic inventory with counts and refinement levels
+10. **get_my_stats** - View your trading statistics and account metrics
 
 See [USAGE.md](USAGE.md) for detailed documentation and examples.
 

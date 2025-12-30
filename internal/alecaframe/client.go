@@ -44,6 +44,14 @@ type Relic struct {
 	Count      uint32 `json:"count"`      // Number of this specific relic
 }
 
+// UserStats represents user trading and account statistics
+type UserStats struct {
+	TotalTrades    int `json:"totalTrades"`
+	PlatinumEarned int `json:"platinumEarned"`
+	PlatinumSpent  int `json:"platinumSpent"`
+	// Add more fields based on actual API response
+}
+
 // relicTypeToString converts a relic type byte to a human-readable string
 func relicTypeToString(relicType uint8) string {
 	switch relicType {
@@ -163,4 +171,34 @@ func (c *Client) GetRelicInventory() (*RelicInventory, error) {
 	}
 
 	return &RelicInventory{Relics: relics}, nil
+}
+
+// GetUserStats fetches the user's trading and account statistics using the public endpoint
+func (c *Client) GetUserStats() (*UserStats, error) {
+	endpoint := fmt.Sprintf("%s/stats/public/getStats?publicToken=%s", baseURL, url.QueryEscape(c.publicToken))
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
+	}
+
+	var stats UserStats
+	if err := json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+		return nil, fmt.Errorf("decoding response: %w", err)
+	}
+
+	return &stats, nil
 }

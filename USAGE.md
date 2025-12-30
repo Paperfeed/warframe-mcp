@@ -152,7 +152,7 @@ Search for tradeable items on warframe.market by name.
 Get your personal relic inventory from Alecaframe.
 
 **Requirements:**
-- Alecaframe credentials must be configured (`ALECAFRAME_USER_HASH` and `ALECAFRAME_PUBLIC_TOKEN`)
+- Alecaframe credentials must be configured (`ALECAFRAME_PUBLIC_TOKEN`)
 
 **Example queries:**
 - "Show me my relic inventory"
@@ -163,6 +163,27 @@ Get your personal relic inventory from Alecaframe.
 - Complete list of your relics organized by era (Requiem, Axi, Neo, Meso, Lith)
 - Total counts for each relic
 - Refinement breakdown (Intact, Exceptional, Flawless, Radiant)
+
+---
+
+### 10. `get_my_stats`
+
+Get your personal trading and account statistics from Alecaframe.
+
+**Requirements:**
+- Alecaframe credentials must be configured (`ALECAFRAME_PUBLIC_TOKEN`)
+
+**Example queries:**
+- "Show me my trading stats"
+- "How much platinum have I earned?"
+- "What are my account statistics?"
+
+**Returns:**
+- Total number of trades
+- Total platinum earned
+- Total platinum spent
+- Net platinum (earned - spent)
+- Other account metrics
 
 ---
 
@@ -229,12 +250,12 @@ He'll be here for another 1 day and 8 hours."
 
 ### Checking your account data
 
-**You:** "Show me my relic inventory"
+**You:** "Show me my relic inventory and trading stats"
 
 **Claude (using the tools):**
-*Uses `get_my_relics`*
+*Uses `get_my_relics` and `get_my_stats`*
 
-"Here's your relic inventory:
+"Here's your account information:
 
 **Relic Inventory:**
 You have 47 unique relics across all eras:
@@ -282,7 +303,6 @@ To get personalized recommendations based on your relic inventory:
 ```json
 {
   "alecaframe": {
-    "userHash": "your-user-hash-here",
     "publicToken": "your-public-token-here"
   }
 }
@@ -290,6 +310,7 @@ To get personalized recommendations based on your relic inventory:
 
 With this setup, the server can:
 - Show your complete relic inventory with the `get_my_relics` tool
+- Display your trading statistics with the `get_my_stats` tool
 - Provide personalized recommendations in the `recommend_prime_farming` tool
 - Help prioritize farming based on what you already have
 
